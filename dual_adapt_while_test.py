@@ -17,8 +17,11 @@ import logging
 import sys
 from os.path import join as pjoin
 import os
+from types import new_class
 
+import pandas as pd
 import dcvae_subj_select
+import vae_subj_select
 
 import numpy as np
 import h5py
@@ -65,6 +68,7 @@ set_random_seeds(seed=20200205, cuda=True)
 BATCH_SIZE = 16
 TRAIN_EPOCH = 10
 
+
 # Randomly shuffled subject.
 subjs = [35, 47, 46, 37, 13, 27, 12, 32, 53, 54, 4, 40, 19, 41, 18, 42, 34, 7,
          49, 9, 5, 48, 29, 15, 21, 17, 31, 45, 1, 38, 51, 8, 11, 16, 28, 44, 24,
@@ -88,17 +92,6 @@ def get_multi_data(subjs):
     X = np.concatenate(Xs, axis=0)
     Y = np.concatenate(Ys, axis=0)
     return X, Y
-
-X, Y = get_data(subjs[0])
-n_classes = 2
-in_chans = X.shape[1]
-# final_conv_length = auto ensures we only get a single output in the time dimension
-model = Deep4Net(in_chans=in_chans, n_classes=n_classes,
-                 input_time_length=X.shape[2],
-                 final_conv_length='auto').cuda()
-
-# Deprecated.
-
 
 def reset_conv_pool_block(network, block_nr):
     suffix = "_{:d}".format(block_nr)
@@ -129,23 +122,9 @@ def reset_conv_pool_block(network, block_nr):
     nn.init.constant_(bnorm.bias, 0)
 
 
-def reset_model(checkpoint):
+def reset_model(checkpoint,model):
     # Load the state dict of the model.
     model.network.load_state_dict(checkpoint['model_state_dict'])
-
-    # # Resets the last conv block
-    # reset_conv_pool_block(model.network, block_nr=4)
-    # reset_conv_pool_block(model.network, block_nr=3)
-    # reset_conv_pool_block(model.network, block_nr=2)
-    # # Resets the fully-connected layer.
-    # # Parameters of newly constructed modules have requires_grad=True by default.
-    # n_final_conv_length = model.network.conv_classifier.kernel_size[0]
-    # n_prev_filter = model.network.conv_classifier.in_channels
-    # n_classes = model.network.conv_classifier.out_channels
-    # model.network.conv_classifier = nn.Conv2d(
-    #     n_prev_filter, n_classes, (n_final_conv_length, 1), bias=True)
-    # nn.init.xavier_uniform_(model.network.conv_classifier.weight, gain=1)
-    # nn.init.constant_(model.network.conv_classifier.bias, 0)
 
     if scheme != 5:
         # Freeze all layers.
@@ -181,9 +160,10 @@ def reset_model(checkpoint):
     # Only optimize parameters that requires gradient.
     optimizer = AdamW(filter(lambda p: p.requires_grad, model.network.parameters()),
                       lr=lr, weight_decay=0.5*0.001)
-    optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
     model.compile(loss=F.nll_loss, optimizer=optimizer,
                   iterator_seed=20200205, )
+
+    return model
 
 cutoff = int(rate * 200 / 100)
 # Use only session 1 data for training
@@ -192,78 +172,119 @@ assert(cutoff <= 200)
 fold = args.subj
 subj = args.subj
 
-total_loss = []
+# total_loss = []
 suffix = '_s' + str(subj) + '_f' + str(fold)
 
-checkpoint = torch.load(pjoin(modelpath, 'subj_' + str(fold) + '.pt'),
-                    map_location='cuda:' + str(args.gpu))
-reset_model(checkpoint)
+baseline = []
+normal_adapt = []
+few_shot = []
 
 def update_model(update_subjs,subj,trial_num):
+    n_classes = 2
+    set_random_seeds(seed=20200205, cuda=True)
 
     if subj in update_subjs:
-        # update_subjs.remove(subj)
-        # print("ADAPTING WITH TRAINING SESS")
         np.delete(update_subjs,np.where(update_subjs == subj))
         
-        X, Y = get_multi_data(update_subjs)
-        X2,Y2 = get_data(subj)
-        X_train, Y_train = X[:], Y[:]
+    X, Y = get_multi_data(update_subjs)
+    X_train_update, Y_train_update = X[:], Y[:]
 
-        ## Adaptation On
-        # X_train = np.concatenate((X_train, X2[:cutoff]), axis=0)
-        # Y_train = np.concatenate((Y_train,Y2[:cutoff]),axis=0)
-    else:
-        X, Y = get_multi_data(update_subjs)
-        X_train, Y_train = X[:], Y[:]
-
-    # X_val, Y_val = X[200:300], Y[200:300]
-    if trial_num < 100:
-        X1, Y1 = get_data(subj)
-        X_val, Y_val = X1[200:300], Y1[200:300]
-        X_test, Y_test = X1[300+trial_num:301+trial_num], Y1[300+trial_num:301+trial_num]
+    X1, Y1 = get_data(subj)
+    X_val, Y_val = X1[200:300], Y1[200:300]
+    X_test_N, Y_test_N = X1[300+trial_num:301+trial_num], Y1[300+trial_num:301+trial_num]
 
     ## Adaptation on Baseline
-    # if trial_num == 0:
-    checkpoint = torch.load(pjoin(modelpath, 'subj_' + str(fold) + '.pt'),
-                    map_location='cuda:' + str(args.gpu))
-    reset_model(checkpoint)
+    XB, YB = get_data(subjs[0])
+    n_classes = 2
+    in_chans = XB.shape[1]
+
+    model = Deep4Net(in_chans=XB.shape[1], n_classes=n_classes,
+                    input_time_length=XB.shape[2],
+                    final_conv_length='auto').cuda()
+
+    checkpoint = torch.load(pjoin(modelpath, 'subj_' + str(subj) + '.pt'),
+                            map_location='cuda:' + str(args.gpu))
+    model = reset_model(checkpoint,model)
+
     X1, Y1 = get_data(subj)
-    model.fit(X1[:cutoff], Y1[:cutoff], epochs=200,
-        batch_size=BATCH_SIZE, scheduler='cosine',
-        validation_data=(X_val, Y_val), remember_best_column='valid_loss')
-    print("If normal adaptation on baseline: " + str(model.evaluate(X1[300:],Y1[300:])))
 
-    baseline_loss = model.evaluate(X1[300:],Y1[300:])
-    baseline_loss = 100 * (1 - baseline_loss["misclass"])
+    X_train, Y_train = X1[:cutoff], Y1[:cutoff]
+    X_test, Y_test = X1[300:], Y1[300:]
+    model.fit(X_train, Y_train, epochs=200,
+              batch_size=BATCH_SIZE, scheduler='cosine',
+              validation_data=(X_val, Y_val), remember_best_column='valid_loss')
+    model.epochs_df.to_csv(pjoin(outpath, 'epochs' + suffix + '.csv'))
+    base_adapt_loss = model.evaluate(X_test, Y_test)
+    base_adapt_loss = 100 * (1- base_adapt_loss["misclass"])
 
-    f = open("dualadapt_baseline.txt", "a")
-    f.write(f"{baseline_loss}\n")
-    f.close()
+    print("Accuracy using normal adapt : " + str(base_adapt_loss))
 
-    # if trial_num == 0:
-    ## Accuracy on the first N trials
-    checkpoint = torch.load(pjoin(modelpath, 'subj_' + str(fold) + '.pt'),
-                    map_location='cuda:' + str(args.gpu))
-    reset_model(checkpoint)
-    X1, Y1 = get_data(subj)
-    X_dummy = np.zeros(X[:2].shape).astype(np.float32)
-    Y_dummy = np.zeros(Y[:2].shape).astype(np.int64)
-    model.fit(X_dummy, Y_dummy, 0, BATCH_SIZE)
-    ## Evaluate accuracy of first N trials
+    # f = open("dualadapt_baseline.txt", "a")
+    # f.write(f"{base_adapt_loss}\n")
+    # f.close()
+
+    normal_adapt.append(base_adapt_loss)
+
+    ### Baseline Accuracy
+    X, Y = get_data(subjs[0])
+    n_classes = 2
+    in_chans = X.shape[1]
+    # final_conv_length = auto ensures we only get a single output in the time dimension
+    model = Deep4Net(in_chans=in_chans, n_classes=n_classes,
+                    input_time_length=X.shape[2],
+                    final_conv_length='auto').cuda()
+
+    # Dummy train data to set up the model.
+    X_train = np.zeros(X[:2].shape).astype(np.float32)
+    Y_train = np.zeros(Y[:2].shape).astype(np.int64)
+
+    checkpoint = torch.load(pjoin(modelpath, 'subj_' + str(subj) + '.pt'),
+                            map_location='cuda:' + str(args.gpu))
+    # Set up the model.
+    model = reset_model(checkpoint,model)
+    model.fit(X_train, Y_train, 0, BATCH_SIZE)
+
+    X, Y = get_data(subj)
+    X_test, Y_test = X[300:], Y[300:]
     test_loss = model.evaluate(X_test, Y_test)
-    # total_loss.append(test_loss["misclass"])
-    print("Accuracy on first N trial no adaptation: " + str(test_loss["misclass"]))
+    baseline_acc = 100 * (1 - test_loss["misclass"])
+    print("Baseline Accuracy on subj " + str(subj) + " : "  + str(baseline_acc))
+    
+
+    # f = open("dualadapt_noadapt.txt", "a")
+    # f.write(f"{baseline_acc}\n")
+    # f.close()
+
+    baseline.append(baseline_acc)
+
+
+    ### Accuracy on first N trials before adaptation
+    First_N_loss = model.evaluate(X_test_N, Y_test_N)
+    print(First_N_loss["misclass"])
+
 
     ## Update the Model
+    model = Deep4Net(in_chans=X1.shape[1], n_classes=n_classes,
+                 input_time_length=X1.shape[2],
+                 final_conv_length='auto').cuda()
+
     checkpoint = torch.load(pjoin(modelpath, 'subj_' + str(fold) + '.pt'),
                         map_location='cuda:' + str(args.gpu))
-    reset_model(checkpoint)
+    model = reset_model(checkpoint,model)
 
-    model.fit(X_train, Y_train, epochs=TRAIN_EPOCH,
+    exp = model.fit(X_train_update, Y_train_update, epochs=TRAIN_EPOCH,
                 batch_size=BATCH_SIZE, scheduler='cosine',
                 validation_data=(X_val, Y_val), remember_best_column='valid_loss')
     model.epochs_df.to_csv(pjoin(outpath, 'epochs' + suffix + '.csv'))
+
+    rememberer = exp.rememberer
+    base_model_param = {
+        'epoch': rememberer.best_epoch,
+        'model_state_dict': rememberer.model_state_dict,
+        'optimizer_state_dict': rememberer.optimizer_state_dict,
+        'loss': rememberer.lowest_val
+    }
+    torch.save(base_model_param, pjoin('D:/adapt_eeg/adapt_models/', 'subj_{}.pt'.format(subj)))
 
     remaining_loss = model.evaluate(X1[301+trial_num:],Y1[301+trial_num:])
 
@@ -271,22 +292,27 @@ def update_model(update_subjs,subj,trial_num):
 
     print("Accuracy on Remaining trials: " + str(remaining_loss))
 
-    total_acc = remaining_loss + test_loss["misclass"] * (trial_num + 1)
+    total_acc = remaining_loss + First_N_loss["misclass"] * (trial_num + 1)
 
     print("Overall acc: " + str(100 - total_acc))
-    f = open("dualadapt.txt", "a")
-    f.write(f"{100-total_acc}\n")
-    f.close()
+    # f = open("dualadapt.txt", "a")
+    # f.write(f"{100-total_acc}\n")
+    # f.close()
+
+    few_shot.append(100-total_acc)
 
 # For all Subjects
 for subj in range(1,55):
     store_subjs = [55 , 56 , 57, 58, 59, 60, 61 , 62, 63,64]
-    for trial in range(2,3):
-
+    for trial in range(5,6):
 
         ## Select Best subject based on trial
-        loadmodel = dcvae_subj_select.dcvae_select(subj, trial, args.datapath)
+        # loadmodel = dcvae_subj_select.dcvae_select(subj, trial, args.datapath)
+        # loadmodel.run()
+
+        loadmodel = vae_subj_select.vae_select(subj,trial,args.datapath)
         loadmodel.run()
+
         load_string = 'test_' + str(subj) + '_list.npy'
 
         ## Load best 15 subjects for adaptation
@@ -294,24 +320,25 @@ for subj in range(1,55):
             update_subjs = np.load(f)
             update_subjs = update_subjs[:15]
 
-        ## Test Trial data
-        X1, Y1 = get_data(subj)
-        X_test, Y_test = X1[300+trial:301+trial], Y1[300+trial:301+trial]
+        update_model(update_subjs,subj,trial)
+        # ## Test Trial data
+        # X1, Y1 = get_data(subj)
+        # X_test, Y_test = X1[300+trial:301+trial], Y1[300+trial:301+trial]
 
         ## Check if newly selected subjects same as previous
-        same_elements = True
-        for element in update_subjs:
-            if element not in store_subjs:
-                same_elements = False
+        # same_elements = True
+        # for element in update_subjs:
+        #     if element not in store_subjs:
+        #         same_elements = False
 
         ## If not the same, update the model again, else remains the same
-        if same_elements == False:
-            update_model(update_subjs,subj,trial)
+        # if same_elements == False:
+        #     update_model(update_subjs,subj,trial)
 
-        ## Perform inference
-        # if trial > 0:
-        #     test_loss = model.evaluate(X_test, Y_test)
-        #     total_loss.append(test_loss["misclass"])
 
-        # store_subjs = update_subjs
-        # print(total_loss)
+dict1 = {"Baseline": baseline, "Normal Adaptation": normal_adapt, "Few Shot Unsupervised": few_shot}
+df = pd.DataFrame(data=dict1)
+df.index += 1
+print (df)
+
+df.to_excel('Results.xlsx',index_label='Subject')

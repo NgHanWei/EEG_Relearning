@@ -27,3 +27,38 @@ The following command will read the raw dataset from the $source folder, and out
 ```
 python preprocess_h5_smt.py $source $target
 ```
+
+# Running the code
+
+dual_adapt_phase_while_test.py 
+Runs adaptation for different number of trials. Saves in results.xlsx file (1) Baseline (2) Baseline + normal adapt (3) Baseline + proposed adapt.
+
+vae_phase_select.py
+Selects based on phases
+
+vae_subj_select.py
+Selects based on overall subject
+
+VAE_visualisation.py
+Visualisation of TSNE and PCA plots.
+
+# Folder structures
+
+Trial_phase_list
+test_#_list contains subject index (1:54)
+test_phase_#_list contains phase index (1:4)
+
+trained_vae
+Trained vaes
+
+adapt_models
+proposed adapted models
+
+results_adapt
+Epochs performance of proposed adapted
+
+baseline_models
+folder containing baseline SI model for each subject
+
+results
+folder containing training results of baseline SI model

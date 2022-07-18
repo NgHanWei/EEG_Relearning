@@ -28,6 +28,13 @@ The following command will read the raw dataset from the $source folder, and out
 python preprocess_h5_smt.py $source $target
 ```
 
+# Getting baseline models
+Either: Run normal train_base.py for all 54 subjects.
+
+Or: vae_subj_select.py --> Generate subj_list using validation trials 200:300 or trial_list using target trials 300:300+X for closest 43 subject representations. 
+
+Run dual_train_custom.py with subj_#_list.npy containing each subjects' closest subjects for training baseline. Baseline models will be saved as subj_#.pt
+
 # Running the code
 
 dual_adapt_phase_while_test.py 

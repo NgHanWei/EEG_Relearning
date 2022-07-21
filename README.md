@@ -29,23 +29,29 @@ python preprocess_h5_smt.py $source $target
 ```
 
 ### Getting baseline models
-Either: Run normal `train_base.py` for all 54 subjects.
 
-Or: `vae_subj_select.py` --> Generate subj_list folder containing npy files using validation trials 200:300 or trial_list using target trials 300:300+X for closest 43 subject representations. 
+#### Either: 
+Run normal `train_base.py` for all 54 subjects.
+
+#### Or: 
+`vae_subj_select.py` --> Generate subj_list folder containing npy files using validation trials 200:300 or trial_list using target trials 300:300+X for closest 43 subject representations. 
 
 Run `dual_train_custom.py` with `subj_\#\_list.npy` containing each subjects' closest subjects for training baseline. Baseline models will be saved as `subj_#.pt`
 
 ### Running the code
+With baseline models and pre-processed eeg file, run:
 
 `dual_adapt_phase_while_test.py`
 Runs adaptation for different number of trials. Saves in results.xlsx file (1) Baseline (2) Baseline + normal adapt (3) Baseline + proposed adapt.
 
-`vae_phase_select.py`
-Selects based on phases
+To options for selecting adaptation:
+```
+`vae_phase_select.py`   #Selects based on phases, which phases of known subjects best suit target
 
-`vae_subj_select.py`
-Selects based on overall subject
+`vae_subj_select.py`    #Selects based on overall subject, which subjects overall data best suit target
+```
 
+### Visualisation
 `VAE_visualisation.py`
 Visualisation of TSNE and PCA plots.
 

@@ -33,7 +33,7 @@ Either: Run normal train_base.py for all 54 subjects.
 
 Or: vae_subj_select.py --> Generate subj_list folder containing npy files using validation trials 200:300 or trial_list using target trials 300:300+X for closest 43 subject representations. 
 
-Run dual_train_custom.py with subj_\#_list.npy containing each subjects' closest subjects for training baseline. Baseline models will be saved as subj_#.pt
+Run dual_train_custom.py with subj_\#\_list.npy containing each subjects' closest subjects for training baseline. Baseline models will be saved as subj_#.pt
 
 ### Running the code
 
@@ -52,8 +52,8 @@ Visualisation of TSNE and PCA plots.
 ### Folder structures
 
 Trial_phase_list
-test_#_list contains subject index (1:54)
-test_phase_#_list contains phase index (1:4)
+test_\#\_list contains subject index (1:54)
+test_phase_\#\_list contains phase index (1:4)
 
 trained_vae
 Trained vaes

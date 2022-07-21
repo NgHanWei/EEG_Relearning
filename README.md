@@ -16,11 +16,11 @@ pip install -r requirements.txt
 
 ## Run
 
-# Obtain the raw dataset
+### Obtain the raw dataset
 
 Download the raw dataset from the resources above, and save them to the same folder. To conserve space, you may only download files that ends with EEG_MI.mat.
 
-# Pre-process the raw dataset
+### Pre-process the raw dataset
 
 The following command will read the raw dataset from the $source folder, and output the pre-processed data KU_mi_smt.h5 into the $target folder.
 
@@ -28,14 +28,14 @@ The following command will read the raw dataset from the $source folder, and out
 python preprocess_h5_smt.py $source $target
 ```
 
-# Getting baseline models
+### Getting baseline models
 Either: Run normal train_base.py for all 54 subjects.
 
 Or: vae_subj_select.py --> Generate subj_list folder containing npy files using validation trials 200:300 or trial_list using target trials 300:300+X for closest 43 subject representations. 
 
-Run dual_train_custom.py with subj_#_list.npy containing each subjects' closest subjects for training baseline. Baseline models will be saved as subj_#.pt
+Run dual_train_custom.py with subj_\#_list.npy containing each subjects' closest subjects for training baseline. Baseline models will be saved as subj_#.pt
 
-# Running the code
+### Running the code
 
 dual_adapt_phase_while_test.py 
 Runs adaptation for different number of trials. Saves in results.xlsx file (1) Baseline (2) Baseline + normal adapt (3) Baseline + proposed adapt.
@@ -49,7 +49,7 @@ Selects based on overall subject
 VAE_visualisation.py
 Visualisation of TSNE and PCA plots.
 
-# Folder structures
+### Folder structures
 
 Trial_phase_list
 test_#_list contains subject index (1:54)

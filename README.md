@@ -66,7 +66,7 @@ Baseline models will be saved as `subj_\#Subj\.pt` in the `$outpath` directory.
 With baseline models and pre-processed eeg file, run:
 
 `dual_adapt_phase_while_test.py`
-Runs adaptation for different number of trials. Saves in results.xlsx file (1) Baseline (2) Baseline + normal adapt (3) Baseline + proposed adapt.
+Runs adaptation for different number of trials. Saves in `Results.xlsx` file the final test accuracy for each of the subjects across 3 categories: (1) Baseline (2) Baseline + normal adapt (3) Baseline + proposed adapt.
 
 To options for selecting adaptation:
 ```
@@ -82,8 +82,8 @@ Visualisation of TSNE and PCA plots.
 ### Folder structures
 
 `Trial_phase_list`
-test_\#\_list contains subject index (1:54)
-test_phase_\#\_list contains phase index (1:4)
+test_\#Subj\_list contains subject index (1:54)
+test_phase_\#Subj\_list contains phase index (1:4)
 
 `trained_vae`
 Trained vaes
@@ -102,3 +102,6 @@ folder containing training results of baseline SI model
 
 `subj_list`
 folder containing npy files of 43 subjects closest to validation of target subj, used to train baseline model using dual_train_custom.py
+
+`trial_list`
+folder containing npy files of 43 subjects closest to test trial(s) of target subj, used to train baseline model using dual_train_custom.py

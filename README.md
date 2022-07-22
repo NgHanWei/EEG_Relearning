@@ -54,6 +54,7 @@ usage: python get_list_vae.py [DATAPATH][OUTPATH][-gpu GPU][-start START][-end E
 Arguments:
 -datapath DATAPATH                  Path for the pre-processed EEG signals
 -outpath OUTPATH                    Path to save the trained model and results in
+-listpath LISTPATH                  Path to lists, either `./subj_lists` or `./trial_lists` based on `get_list_vae.py`
 -gpu GPU                            Set gpu to use, default is 0
 -start START                        Set start of range for subjects, minimum 1 and maximum 54
 -end END                            Set end of range for subjects, minimum 2 and maximum 55

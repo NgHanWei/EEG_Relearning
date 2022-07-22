@@ -33,10 +33,33 @@ python preprocess_h5_smt.py $source $target
 #### Either: 
 Run normal `train_base.py` for all 54 subjects.
 
-#### Or: 
-`vae_subj_select.py` --> Generate subj_list folder containing npy files using validation trials 200:300 or trial_list using target trials 300:300+X for closest 43 subject representations. 
+#### Or:
+To generate baseline models using subject selection method, run `get_list_vae.py`. The selection is based on the validation trials of the target subject, which is assumed to be known during the adaptation process to select the best adaptation performance.
+```
+usage: python get_list_vae.py [DATAPATH][-start START][-end END][-subj SUBJ][-trial TRIAL]
 
-Run `dual_train_custom.py` with `subj_\#\_list.npy` containing each subjects' closest subjects for training baseline. Baseline models will be saved as `subj_#.pt`
+Arguments:
+-datapath DATAPATH                  Datapath for the pre-processed EEG signals
+-start START                        Set start of range for subjects, minimum 1 and maximum 54
+-end END                            Set end of range for subjects, minimum 2 and maximum 55
+-subj SUBJ                          Set the subject number to run feature extraction on, will override the -start and -end functions if used
+-trial TRIAL (REQUIRED)             Set the number of test trials from target subject to create baseline. Set number of trials to 0 to use target validation data
+```
+A list of 43 subjects with the closest latent representations to the target subject will be produced and saved. If validation data was used, lists will be saved in the `subj_lists` folder as `subj_\#Subj\_list.npy`. If target trial data was used, it will be saved in the `trial_lists` folder as `test_\#Subj\_list.npy`. In total there will be 54 subject lists corresponding to each subject of the EEG data.
+
+Run `dual_train_custom.py` 
+```
+usage: python get_list_vae.py [DATAPATH][OUTPATH][-gpu GPU][-start START][-end END][-subj SUBJ]
+
+Arguments:
+-datapath DATAPATH                  Path for the pre-processed EEG signals
+-outpath OUTPATH                    Path to save the trained model and results in
+-gpu GPU                            Set gpu to use, default is 0
+-start START                        Set start of range for subjects, minimum 1 and maximum 54
+-end END                            Set end of range for subjects, minimum 2 and maximum 55
+-subj SUBJ                          Set the subject number to run feature extraction on, will override the -start and -end functions if used
+```
+Baseline models will be saved as `subj_\#Subj\.pt` in the `$outpath` directory.
 
 ### Running the code
 With baseline models and pre-processed eeg file, run:

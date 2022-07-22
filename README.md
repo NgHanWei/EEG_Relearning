@@ -4,7 +4,7 @@ Unsupervised One-Shot Adaptation through Model Re-Learning
 ## Overview
 
 ## Resources
-Raw Dataset: Link[http://gigadb.org/dataset/100542]
+Raw Dataset: [Link](http://gigadb.org/dataset/100542)
 
 ## Dependencies
 
@@ -18,11 +18,11 @@ pip install -r requirements.txt
 
 ### Obtain the raw dataset
 
-Download the raw dataset from the resources above, and save them to the same folder. To conserve space, you may only download files that ends with EEG_MI.mat.
+Download the raw dataset from the resources above, and save them to the same `$source` folder. To conserve space, you may only download files that ends with `EEG_MI.mat`.
 
 ### Pre-process the raw dataset
 
-The following command will read the raw dataset from the $source folder, and output the pre-processed data KU_mi_smt.h5 into the $target folder.
+The following command will read the raw dataset from the `$source` folder, and output the pre-processed data `KU_mi_smt.h5` into the `$target` folder.
 
 ```
 python preprocess_h5_smt.py $source $target

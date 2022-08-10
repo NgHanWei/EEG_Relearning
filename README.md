@@ -96,19 +96,19 @@ Visualisation of TSNE and PCA plots.
 
 `Trial_phase_list`
 test_\#Subj\_list contains subject index (1:54)
-test_phase_\#Subj\_list contains phase index (1:4)
+test_phase_\#Subj\_list contains phase index (1:4) from vae_phase_select.py or from vae_subj_select_exclude.py,,
 
 `trained_vae`
 Trained vaes on each subject validation or test trials from get_list_vae.py
 
 `$output_adapt`
-Epochs performance of proposed adapted and proposed adapted models
+Epochs performance of proposed adapted and proposed adapted models for dual_adapt_phase_while_test.py
 
 `$outpath`
-folder containing baseline SI model for each subject and training results of baseline SI model
+folder containing baseline SI model for each subject and training results of baseline SI model for dual_train_custom.py
 
 `subj_list`
-folder containing npy files of 43 subjects closest to validation of target subj, used to train baseline model using dual_train_custom.py
+folder containing npy files of 43 subjects closest to validation of target subj, from vae_subj_select.py, used to train baseline model using dual_train_custom.py
 
 `trial_list`
-folder containing npy files of 43 subjects closest to test trial(s) of target subj, used to train baseline model using dual_train_custom.py
+folder containing npy files of 43 subjects closest to test trial(s) of target subj, from vae_subj_select.py, used to train baseline model using dual_train_custom.py

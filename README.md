@@ -68,6 +68,19 @@ With baseline models and pre-processed eeg file, run:
 `dual_adapt_phase_while_test.py`
 Runs adaptation for different number of trials. Saves in `Results.xlsx` file the final test accuracy for each of the subjects across 3 categories: (1) Baseline (2) Baseline + normal adapt (3) Baseline + proposed adapt.
 
+```
+usage: python dual_train_custom.py [DATAPATH][OUTPATH][-gpu GPU][-start START][-end END][-subj SUBJ]
+
+Arguments:
+-datapath DATAPATH                  Path for the pre-processed EEG signals
+-outpath  OUTPATH_ADAPT             Path to save the trained model and results in
+-listpath LISTPATH                  Path to lists, either `./subj_lists` or `./trial_lists` based on `get_list_vae.py`
+-gpu GPU                            Set gpu to use, default is 0
+-start START                        Set start of range for subjects, minimum 1 and maximum 54
+-end END                            Set end of range for subjects, minimum 2 and maximum 55
+-subj SUBJ                          Set the subject number to run feature extraction on, will override the -start and -end functions if used
+```
+
 To options for selecting adaptation:
 ```
 `vae_phase_select.py`   #Selects based on phases, which phases of known subjects best suit target
@@ -88,13 +101,10 @@ test_phase_\#Subj\_list contains phase index (1:4)
 `trained_vae`
 Trained vaes
 
-`adapt_models`
-proposed adapted models
+`$output_adapt`
+Epochs performance of proposed adapted and proposed adapted models
 
-`results_adapt`
-Epochs performance of proposed adapted
-
-`$outpath$`
+`$outpath`
 folder containing baseline SI model for each subject and training results of baseline SI model
 
 `subj_list`

@@ -99,7 +99,7 @@ test_\#Subj\_list contains subject index (1:54)
 test_phase_\#Subj\_list contains phase index (1:4)
 
 `trained_vae`
-Trained vaes
+Trained vaes on each subject validation or test trials from get_list_vae.py
 
 `$output_adapt`
 Epochs performance of proposed adapted and proposed adapted models

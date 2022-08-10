@@ -34,7 +34,7 @@ parser.add_argument(
     '-end', type=int, help='End of the subject index (not inclusive)', default=55)
 parser.add_argument('-subj', type=int,
                     help='Target Subject for Subject Selection, will override start and end')
-parser.add_argument('-trial', type=int, default = 7,
+parser.add_argument('-trial', type=int, default = 0,
                     help='How many trials to use for few-shot, set to 0 to use validation results')
 
 args = parser.parse_args()

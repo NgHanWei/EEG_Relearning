@@ -49,7 +49,7 @@ A list of 43 subjects with the closest latent representations to the target subj
 
 Run `dual_train_custom.py` 
 ```
-usage: python get_list_vae.py [DATAPATH][OUTPATH][-gpu GPU][-start START][-end END][-subj SUBJ]
+usage: python dual_train_custom.py [DATAPATH][OUTPATH][-gpu GPU][-start START][-end END][-subj SUBJ]
 
 Arguments:
 -datapath DATAPATH                  Path for the pre-processed EEG signals
@@ -94,11 +94,8 @@ proposed adapted models
 `results_adapt`
 Epochs performance of proposed adapted
 
-`baseline_models`
-folder containing baseline SI model for each subject
-
-`results`
-folder containing training results of baseline SI model
+`$outpath$`
+folder containing baseline SI model for each subject and training results of baseline SI model
 
 `subj_list`
 folder containing npy files of 43 subjects closest to validation of target subj, used to train baseline model using dual_train_custom.py

@@ -22,6 +22,7 @@ from types import new_class
 import pandas as pd
 import vae_subj_select
 import vae_phase_select
+import vae_phase_select_exclude
 
 import numpy as np
 import h5py
@@ -48,8 +49,12 @@ parser.add_argument(
     '-trfrate', type=int, help='The percentage of data for adaptation', default=100)
 parser.add_argument('-lr', type=float, help='Learning rate', default=0.0005)
 parser.add_argument('-gpu', type=int, help='The gpu device to use', default=0)
+parser.add_argument('-start', type=int,
+                    help='Start of the subject index', default=1)
+parser.add_argument(
+    '-end', type=int, help='End of the subject index (not inclusive)', default=55)
 parser.add_argument('-subj', type=int,
-                    help='Target Subject for Subject Selection', required=True)
+                    help='Target Subject for Subject Selection')
 parser.add_argument('-trial', type=int, default = 7,
                     help='How many trials to use for few-shot')
 
@@ -70,7 +75,10 @@ torch.backends.cudnn.deterministic = True
 set_random_seeds(seed=20200205, cuda=True)
 BATCH_SIZE = 16
 TRAIN_EPOCH = 10
-
+start = args.start
+end = args.end
+assert(start < end)
+subjs_range = args.subj if args.subj else range(start, end)
 
 # Randomly shuffled subject.
 subjs = [35, 47, 46, 37, 13, 27, 12, 32, 53, 54, 4, 40, 19, 41, 18, 42, 34, 7,
@@ -185,11 +193,7 @@ cutoff = int(rate * 200 / 100)
 # Use only session 1 data for training
 assert(cutoff <= 200)
 
-fold = args.subj
-subj = args.subj
-
 # total_loss = []
-suffix = '_s' + str(subj) + '_f' + str(fold)
 
 baseline = []
 normal_adapt = []
@@ -234,9 +238,10 @@ def update_model(update_subjs,subj,trial_num,update_phases):
     model.fit(X_train, Y_train, epochs=200,
               batch_size=BATCH_SIZE, scheduler='cosine',
               validation_data=(X_val, Y_val), remember_best_column='valid_loss')
+    suffix = '_s' + str(subj) + '_normal'
     model.epochs_df.to_csv(pjoin(outpath, 'epochs' + suffix + '.csv'))
-    base_adapt_loss = model.evaluate(X_test, Y_test)
-    base_adapt_loss = 100 * (1- base_adapt_loss["misclass"])
+    # base_adapt_loss = model.evaluate(X_test, Y_test)
+    # base_adapt_loss = 100 * (1- base_adapt_loss["misclass"])
 
     base_adapt_loss = model.evaluate(X_test[1+trial_num:], Y_test[1+trial_num:])
     base_adapt_loss = 100 * ((100-trial_num-1) * (1- base_adapt_loss["misclass"]))/(100-trial_num-1)
@@ -283,13 +288,14 @@ def update_model(update_subjs,subj,trial_num,update_phases):
                  input_time_length=X1.shape[2],
                  final_conv_length='auto').cuda()
 
-    checkpoint = torch.load(pjoin(modelpath, 'subj_' + str(fold) + '.pt'),
+    checkpoint = torch.load(pjoin(modelpath, 'subj_' + str(subj) + '.pt'),
                         map_location='cuda:' + str(args.gpu))
     model = reset_model(checkpoint,model)
 
     exp = model.fit(X_train_update, Y_train_update, epochs=TRAIN_EPOCH,
                 batch_size=BATCH_SIZE, scheduler='cosine',
                 validation_data=(X_val, Y_val), remember_best_column='valid_loss')
+    suffix = '_s' + str(subj) + '_updated'
     model.epochs_df.to_csv(pjoin(outpath, 'epochs' + suffix + '.csv'))
 
     rememberer = exp.rememberer
@@ -319,13 +325,13 @@ for subj in range(1,55):
  
     ## Select Best subject based on trial
 
-    loadmodel = vae_phase_select.vae_select(subj,trials-1,args.datapath)
+    loadmodel = vae_phase_select_exclude.vae_select(subj,trials-1,args.datapath)
     loadmodel.run()
 
     load_string = './trial_phase_lists/test_' + str(subj) + '_list.npy'
     load_string_2 = './trial_phase_lists/test_phase_' + str(subj) + '_list.npy'
 
-    ## Load best 15 subjects for adaptation
+    ## Load best 60 phases for adaptation
     with open(load_string, 'rb') as f:
         update_subjs = np.load(f)
         update_subjs = update_subjs[:60]
@@ -334,10 +340,12 @@ for subj in range(1,55):
         update_phases = np.load(f)
         update_phases = update_phases[:60]
     print(update_phases)
+    
+    ## Perform adaptation
     update_model(update_subjs,subj,trials-1,update_phases)
 
 
-
+## Save results to an excel sheet
 dict1 = {"Baseline": baseline, "Normal Adaptation": normal_adapt, "Few Shot Unsupervised": few_shot}
 df = pd.DataFrame(data=dict1)
 df.index += 1

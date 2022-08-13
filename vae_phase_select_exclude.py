@@ -275,14 +275,9 @@ class vae_select():
             X_test = np.expand_dims(X_test,axis=1)
             X_test = torch.from_numpy(X_test)
             X_test = X_test.to('cuda')
-
-            max_num = 5
-            if subj == self.subj:
-                X_test = X_test[:200]
-                y_test = y_test[:200]
-                max_num = 3
-                
-            for i in range(1,max_num):
+            
+            # For each phase
+            for i in range(1,5):
                 model.eval()
                 with torch.no_grad():
                     reconstruction, mu, logvar = model(X_test[(i-1)*100:i*100])
@@ -297,8 +292,6 @@ class vae_select():
 
         sort_list = loss_list.copy()
         sort_list.sort()
-
-        
 
         # Get subject index list
         index_list = []

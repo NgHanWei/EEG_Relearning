@@ -273,7 +273,8 @@ class vae_select():
             X_test = np.expand_dims(X_test,axis=1)
             X_test = torch.from_numpy(X_test)
             X_test = X_test.to('cuda')
-                
+            
+            # For each Phase
             for i in range(1,5):
                 model.eval()
                 with torch.no_grad():
@@ -308,8 +309,8 @@ class vae_select():
             print("PHASE: " + str(phase))
             phase_list.append(phase)
 
-            # Remove validation and testing data of target subject
-            if subj == targ_subj and phase >=2:
+            # Remove validation and testing data of target subject            
+            if ceil(sub_index,4) == targ_subj and phase >=3:
                 index_list = index_list[:-1]
                 phase_list = phase_list[:-1]
 
@@ -317,7 +318,7 @@ class vae_select():
         print(index_list[:172])
         print(phase_list[:172])
 
-        ## Save Array
+        ## Save Array, if targ_trial is -1 list depends on targ subject entire validation phase, if targ_trial >1 list depends on target subject trials
         if targ_trial == -1:
             if os.path.exists("./subj_phase_lists/") == False:
                 os.makedirs("./subj_phase_lists/")

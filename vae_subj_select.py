@@ -23,26 +23,6 @@ from braindecode.torch_ext.util import set_random_seeds
 import h5py
 set_random_seeds(seed=20200205, cuda=True)
 
-# parser = argparse.ArgumentParser(
-#     description='VAE Subject Selection')
-# parser.add_argument('-subj', type=int,
-#                     help='Target Subject for Subject Selection', required=True)
-# parser.add_argument('-epochs', type=int, default= 100,
-#                     help='Number of Epochs', required=False)
-# parser.add_argument('-features', type=int, default= 16,
-#                     help='Number of Latent Features', required=False)
-# parser.add_argument('-lr', type=float, default= 0.0005,
-#                     help='Set Learning Rate', required=False)
-# parser.add_argument('-clip', type=float, default= 0,
-#                     help='Set Gradient Clipping Threshold', required=False)
-# parser.add_argument('-data', type=str, default= 'eeg',
-#                     help='Choose Type of Data: eeg or semg', required=False)
-# parser.add_argument('-datapath', type=str, help='Path to data',required=True)
-# parser.add_argument('-all', default=False, action='store_true')
-# args = parser.parse_args()
-
-# targ_subj = self.subj
-
 class vae_select():
     def __init__(self, subj, trial, datapath, epochs = 100, features = 16, alpha = 0.5, beta = 0.5, lr = 0.0005, clip = 0, loss = 'default', data = 'eeg', all=False, flow=False):
         super(vae_select, self).__init__()
@@ -189,7 +169,9 @@ class vae_select():
         print("Total number of trainable params: " + str(pytorch_total_params))
 
         # Save file name
-        file_name = "./vae_torch" +  '_' + str(self.data)  + '_' + str(targ_subj) + '_' + str(filters) + '_' + str(channels) + '_' + str(features) + ".pt"
+        if os.path.exists("./trained_vae/") == False:
+            os.makedirs("./trained_vae/")
+        file_name = "./trained_vae/vae_torch" +  '_' + str(self.data)  + '_' + str(targ_subj) + '_' + str(filters) + '_' + str(channels) + '_' + str(features) + ".pt"
 
         def recon_loss(outputs,targets):
 
@@ -315,8 +297,12 @@ class vae_select():
 
         ## Save Array
         if targ_trial == -1:
-            save_string = 'subj_' + str(self.subj) + '_list.npy'
+            if os.path.exists("./subj_lists/") == False:
+                os.makedirs("./subj_lists/")
+            save_string = './subj_lists/subj_' + str(self.subj) + '_list.npy'
         else:
-            save_string = 'test_' + str(self.subj) + '_list.npy'
+            if os.path.exists("./trial_lists/") == False:
+                os.makedirs("./trial_lists/")
+            save_string = './trial_lists/test_' + str(self.subj) + '_list.npy'
         with open(save_string, 'wb') as f:
             np.save(f, np.array(index_list[:43]))

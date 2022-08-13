@@ -33,7 +33,9 @@ from braindecode.torch_ext.optimizers import AdamW
 from braindecode.torch_ext.util import set_random_seeds
 from torch import nn
 
-# python dual_adapt_phase_while_test.py D:/DeepConvNet/pre-processed/KU_mi_smt.h5 D:/adapt_eeg/baseline_models D:/adapt_eeg/results_adapt -scheme 5 -trfrate 10 -subj $subj -trial $trial
+import winsound
+
+# python dual_adapt_phase_while_test.py D:/DeepConvNet/pre-processed/KU_mi_smt.h5 D:/adapt_eeg/baseline_models D:/adapt_eeg/results_adapt -scheme 5 -trfrate 10 -trial $trial
 
 logging.basicConfig(format='%(asctime)s %(levelname)s : %(message)s',
                     level=logging.INFO, stream=sys.stdout)
@@ -57,6 +59,7 @@ parser.add_argument('-subj', type=int,
                     help='Target Subject for Subject Selection')
 parser.add_argument('-trial', type=int, default = 7,
                     help='How many trials to use for few-shot')
+parser.add_argument('-exclude', default=False, action='store_true')
 
 args = parser.parse_args()
 datapath = args.datapath
@@ -79,6 +82,7 @@ start = args.start
 end = args.end
 assert(start < end)
 subjs_range = args.subj if args.subj else range(start, end)
+exclude = args.exclude
 
 # Randomly shuffled subject.
 subjs = [35, 47, 46, 37, 13, 27, 12, 32, 53, 54, 4, 40, 19, 41, 18, 42, 34, 7,
@@ -305,7 +309,7 @@ def update_model(update_subjs,subj,trial_num,update_phases):
         'optimizer_state_dict': rememberer.optimizer_state_dict,
         'loss': rememberer.lowest_val
     }
-    torch.save(base_model_param, pjoin('D:/adapt_eeg/adapt_models/', 'subj_{}.pt'.format(subj)))
+    torch.save(base_model_param, pjoin(outpath, 'subj_{}.pt'.format(subj)))
 
     remaining_loss = model.evaluate(X1[301+trial_num:],Y1[301+trial_num:])
 
@@ -321,11 +325,15 @@ def update_model(update_subjs,subj,trial_num,update_phases):
 
 # For all Subjects
 for subj in range(1,55):
+    
     store_subjs = [55 , 56 , 57, 58, 59, 60, 61 , 62, 63,64]
  
     ## Select Best subject based on trial
 
-    loadmodel = vae_phase_select_exclude.vae_select(subj,trials-1,args.datapath)
+    if exclude:
+        loadmodel = vae_phase_select_exclude.vae_select(subj,trials-1,args.datapath)
+    else:
+        loadmodel = vae_phase_select.vae_select(subj,trials-1,args.datapath)
     loadmodel.run()
 
     load_string = './trial_phase_lists/test_' + str(subj) + '_list.npy'
@@ -352,3 +360,9 @@ df.index += 1
 print (df)
 
 df.to_excel('Results.xlsx',index_label='Subject')
+
+duration = 1000  # milliseconds
+freq = 440  # Hz
+winsound.Beep(freq, duration)
+winsound.Beep(freq, duration)
+winsound.Beep(freq, duration)

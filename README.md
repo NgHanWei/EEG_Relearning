@@ -81,7 +81,7 @@ With baseline models and pre-processed eeg file, run:
 Runs adaptation for different number of trials. Saves output in `Results.xlsx` file the final test accuracy for each of the subjects across 3 categories: (1) Baseline (2) Baseline + normal adapt (3) Baseline + proposed adapt.
 
 ```
-usage: python dual_train_custom.py [DATAPATH] [MODELPATH] [OUTPATH_ADAPT] [-scheme SCHEME] [-trfrate TRFRATE] [-lr LR] [-gpu GPU] [-start START] [-end END] [-subj SUBJ] [-trial TRIAL]
+usage: python dual_adapt_phase_while_test.py [DATAPATH] [MODELPATH] [OUTPATH_ADAPT] [-scheme SCHEME] [-trfrate TRFRATE] [-lr LR] [-gpu GPU] [-start START] [-end END] [-subj SUBJ] [-trial TRIAL] [-exclude]
 
 Perform adaptation on subject-independent baseline model 
 
@@ -95,11 +95,16 @@ Optional Arguments:
     -trfrate TRFRATE                    The percentage of data for adaptation
     -lr LR                              Learning rate
     -gpu GPU                            Set gpu to use, default is 0
-    -start START                        Set start of range for subjects, minimum 1 and maximum 54
-    -end END                            Set end of range for subjects, minimum 2 and maximum 55
+    -start START                        Set start of range for subjects, minimum 1 and maximum 54, default set at 1
+    -end END                            Set end of range for subjects, minimum 2 and maximum 55, default set at 55
     -subj SUBJ                          Set the subject number to run feature extraction on, will override the -start and -end functions if used
     -trial TRIAL                        How many trials from target subject to use for adaptation
     -exclude                            Set data selection based on phases to either include or exclude additional labelled data, default included
+```
+
+An example command line to run the proposed method for 54 subjects excluding the additional target subject data at scheme 5, comparing against previous method which uses 100% of additional target subject:
+```
+
 ```
 
 ### Folder structures

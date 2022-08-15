@@ -99,20 +99,8 @@ Optional Arguments:
     -end END                            Set end of range for subjects, minimum 2 and maximum 55
     -subj SUBJ                          Set the subject number to run feature extraction on, will override the -start and -end functions if used
     -trial TRIAL                        How many trials from target subject to use for adaptation
+    -exclude                            Set data selection based on phases to either include or exclude additional labelled data, default included
 ```
-
-Options for selecting adaptation:
-```
-`vae_phase_select.py`           Selects based on phases including the additional labelled data, which phases of known subjects best suit target
-
-vae_phase_select_exclude.py`    Selects based on phases excluding the additional labelled data, which phases of known subjects best suit target
-
-`vae_subj_select.py`            Selects based on overall subject, which subjects excluding target subject best suit target
-```
-
-### Visualisation
-`VAE_visualisation.py`
-Visualisation of TSNE and PCA plots.
 
 ### Folder structures
 

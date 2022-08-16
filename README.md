@@ -135,10 +135,10 @@ python dual_adapt_phase_while_test.py $DATAPATH $MODELPATH $OUTPATH_ADAPT -schem
     ├── subj_lists                      # Folder containing npy files of 43 subjects closest to validation of target subject
     ├── trial_lists                     # Folder containing npy files of 43 subjects closest to test trial(s) of target subject
     ├── trial_phase_list                # Folder containing selected subject and phases when running main adaptation code
-    │   ├── test_\#Subj\_list             # Subject index ranging from 1 to 54
-    │   └── test_phase_\#Subj\_list       # Phase index ranging from 1 to 4
+    │   ├── test_#Subj_list             # Subject index ranging from 1 to 54
+    │   └── test_phase_#Subj_list       # Phase index ranging from 1 to 4
     ├── $OUTPUT_ADAPT                   # Folder containing the adapted model using unsupervised re-learning and the performance of the model while training
-    │   ├── epochs_s\#Subj\_normal.csv    # Performance for the normal model
-    │   ├── epochs_s\#Subj\_updated.csv   # Performance for the adaptation model
+    │   ├── epochs_s#Subj_normal.csv    # Performance for the normal model
+    │   ├── epochs_s#Subj_updated.csv   # Performance for the adaptation model
     │   └── subj_#Subj.pt               # Adapted model
     └── ...

@@ -55,7 +55,7 @@ parser.add_argument(
     '-end', type=int, help='End of the subject index (not inclusive)', default=55)
 parser.add_argument('-subj', type=int,
                     help='Target Subject for Subject Selection')
-parser.add_argument('-trial', type=int, default = 7,
+parser.add_argument('-trial', type=int, default = 4,
                     help='How many trials to use for few-shot')
 parser.add_argument('-exclude', default=False, action='store_true')
 

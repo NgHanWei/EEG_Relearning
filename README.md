@@ -45,6 +45,8 @@ Pre-trained baseline models created using the proposed method is included under 
 Run normal `train_base.py` for all 54 subjects as per [Kaishuo et al.](https://github.com/zhangks98/eeg-adapt).
 
 #### Or:
+#### Obtaining train/validation split using unsupervised learning
+
 To generate baseline models using subject selection method, run `get_list_vae.py`. The selection is based on the validation trials of the target subject, which is assumed to be known during the adaptation process to select the best adaptation performance.
 ```
 usage: python get_list_vae.py [DATAPATH][-start START][-end END][-subj SUBJ][-trial TRIAL]
@@ -60,7 +62,15 @@ Optional Arguments:
     -subj SUBJ                          Set the subject number to run feature extraction on, will override the -start and -end functions if used
     -trial TRIAL                        Set the number of test trials from target subject to create baseline. Set number of trials to 0 to use target validation data
 ```
+
+To run the code for learning best train/validation splits using target validation data:
+```
+python get_list_vae.py DATAPATH -trial 0
+```
+
 A list of 43 subjects with the closest latent representations to the target subject will be produced and saved. If validation data was used, lists will be saved in the `subj_lists` folder as `subj_\#Subj\_list.npy`. If target trial data was used, it will be saved in the `trial_lists` folder as `test_\#Subj\_list.npy`. In total there will be 54 subject lists corresponding to each subject of the EEG data.
+
+#### Obtaining baseline models
 
 Run `dual_train_custom.py`
 ```

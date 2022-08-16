@@ -50,7 +50,7 @@ parser.add_argument('-lr', type=float, help='Learning rate', default=0.0005)
 parser.add_argument('-gpu', type=int, help='The gpu device to use', default=0)
 parser.add_argument('-subj', type=int,
                     help='Target Subject for Subject Selection', required=True)
-parser.add_argument('-trial', type=int, default = 7,
+parser.add_argument('-trial', type=int, default = 4,
                     help='How many trials to use for few-shot')
 
 args = parser.parse_args()

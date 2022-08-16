@@ -6,8 +6,8 @@ Adaptive Few-Shot Unsupervised Machine Re-Learning for EEG Motor Imagery Classif
 | Methodology | Mean (SD) | Median | Range (Max-Min) |
 |-|-|-|-|
 | Subject-Independent | 84.44 (11.93) | 86.32 | 42.11 (100-57.89) |
-| Subject-Adaptive(Including Extra Labels) | 85.82 (11.05) | 89.36 | 39.36 (100-60.64) |
-| Subject-Adaptive(Excluding Extra Labels) | 86.63 (11.79) | 90.10 | 38.54 (100-61.46) |
+| Subject-Adaptive<br>(Including Extra Labels) | 85.82 (11.05) | 89.36 | 39.36 (100-60.64) |
+| Subject-Adaptive<br>(Excluding Extra Labels) | 86.63 (11.79) | 90.10 | 38.54 (100-61.46) |
 
 ## Resources
 Raw Dataset: [Link](http://gigadb.org/dataset/100542)
@@ -106,9 +106,14 @@ Optional Arguments:
     -exclude                            Set data selection based on phases to either include or exclude additional labelled data, default included
 ```
 
-An example command line to run the proposed method for 54 subjects excluding the additional target subject data at scheme 5, comparing against previous method which uses 100% of additional target subject:
+An example command line to run the proposed method for 54 subjects excluding the additional target subject data at scheme 5 and 4 unlabelled target trials, while comparing against previous method which uses 100% of additional target subject adaptation data:
+```
+python dual_adapt_phase_while_test.py $DATAPATH $MODELPATH $OUTPATH_ADAPT -exclude
 ```
 
+For testing on scheme 4 with 80% of adaptation data for both proposed and comparison method, with 1 unlabelled target trial for the proposed method:
+``` 
+python dual_adapt_phase_while_test.py $DATAPATH $MODELPATH $OUTPATH_ADAPT -scheme 4 -trfrate 80 -trial 1
 ```
 
 ### Folder structures

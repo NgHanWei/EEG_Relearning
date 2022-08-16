@@ -33,8 +33,6 @@ from braindecode.torch_ext.optimizers import AdamW
 from braindecode.torch_ext.util import set_random_seeds
 from torch import nn
 
-import winsound
-
 # python dual_adapt_phase_while_test.py D:/DeepConvNet/pre-processed/KU_mi_smt.h5 D:/adapt_eeg/baseline_models D:/adapt_eeg/results_adapt -scheme 5 -trfrate 10 -trial $trial
 
 logging.basicConfig(format='%(asctime)s %(levelname)s : %(message)s',
@@ -360,9 +358,3 @@ df.index += 1
 print (df)
 
 df.to_excel('Results.xlsx',index_label='Subject')
-
-duration = 1000  # milliseconds
-freq = 440  # Hz
-winsound.Beep(freq, duration)
-winsound.Beep(freq, duration)
-winsound.Beep(freq, duration)

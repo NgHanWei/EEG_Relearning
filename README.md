@@ -49,7 +49,7 @@ usage: python get_list_vae.py [DATAPATH][-start START][-end END][-subj SUBJ][-tr
 Obtain list of subjects to use as training data for subject-indepdendent baseline model
 
 Positional Arguments:
-    DATAPATH                            Datapath for the pre-processed EEG signals
+    DATAPATH                            Datapath for the pre-processed EEG signals file
 
 Optional Arguments:
     -start START                        Set start of range for subjects, minimum 1 and maximum 54
@@ -66,9 +66,9 @@ usage: python dual_train_custom.py [DATAPATH] [OUTPATH] [LISTPATH] [-gpu GPU] [-
 Training a custom subject-indepdendent baseline model using pre-determined training-validation split
 
 Positional Arguments:
-    DATAPATH                            Path for the pre-processed EEG signals
-    OUTPATH                             Path to save the trained model and results in
-    LISTPATH                            Path to lists, either `./subj_lists` or `./trial_lists` based on `get_list_vae.py`
+    DATAPATH                            Path for the pre-processed EEG signals file
+    OUTPATH                             Path to folder for saving the trained model and results in
+    LISTPATH                            Path to folder of lists, either `./subj_lists` or `./trial_lists` based on `get_list_vae.py`
 
 Optional Arguments:
     -gpu GPU                            Set gpu to use, default is 0
@@ -90,9 +90,9 @@ usage: python dual_adapt_phase_while_test.py [DATAPATH] [MODELPATH] [OUTPATH_ADA
 Perform adaptation on subject-independent baseline model 
 
 Positional Arguments:
-    DATAPATH                            Path for the pre-processed EEG signals
-    MODELPATH                           Path containing the baseline classification models for adaptation
-    OUTPATH_ADAPT                       Path to save the trained model and results in
+    DATAPATH                            Path for the pre-processed EEG signals file
+    MODELPATH                           Path to folder containing the baseline classification models for adaptation
+    OUTPATH_ADAPT                       Path to folder for saving the trained model and results in
 
 Optional Arguments:
     -scheme SCHEME                      Model layer freezing scheme

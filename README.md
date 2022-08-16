@@ -38,6 +38,8 @@ python preprocess_h5_smt.py $source $target
 
 ### Getting baseline models
 
+Pre-trained baseline models created using the proposed method is included under the folder `baseline_models`. The folder can be used to replace `$MODELPATH` when running the code for the EEG model re-learning. Otherwise, baseline models can be trained using either one of the two following methods.
+
 #### Either:
 Run normal `train_base.py` for all 54 subjects as per [Kaishuo et al.](https://github.com/zhangks98/eeg-adapt).
 

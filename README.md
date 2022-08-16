@@ -97,7 +97,7 @@ python dual_train_custom.py DATAPATH OUTPATH LISTPATH
 
 Baseline models will be saved as `subj_\#Subj\.pt` in the `$OUTPATH` directory. The baseline models will be used for the adaptation.
 
-## Running the code
+## Performing Adaptation
 With baseline models saved in `$MODELPATH` and pre-processed eeg file in `$DATAPATH`, run:
 
 `dual_adapt_phase_while_test.py`

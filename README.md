@@ -79,10 +79,16 @@ Optional Arguments:
     -end END                            Set end of range for subjects, minimum 2 and maximum 55
     -subj SUBJ                          Set the subject number to run feature extraction on, will override the -start and -end functions if used
 ```
-Baseline models will be saved as `subj_\#Subj\.pt` in the `$outpath` directory.
+
+To run for all subjects after obtaining lists:
+```
+python dual_train_custom.py DATAPATH OUTPATH LISTPATH
+```
+
+Baseline models will be saved as `subj_\#Subj\.pt` in the `$OUTPATH` directory. The baseline models will be used for the adaptation.
 
 ### Running the code
-With baseline models and pre-processed eeg file, run:
+With baseline models saved in `$MODELPATH` and pre-processed eeg file in `$DATAPATH`, run:
 
 `dual_adapt_phase_while_test.py`
 Runs adaptation for different number of trials. Saves output in `Results.xlsx` file the final test accuracy for each of the subjects across 3 categories: (1) Baseline (2) Baseline + normal adapt (3) Baseline + proposed adapt.
@@ -119,24 +125,20 @@ For testing on scheme 4 with 80% of adaptation data for both proposed and compar
 python dual_adapt_phase_while_test.py $DATAPATH $MODELPATH $OUTPATH_ADAPT -scheme 4 -trfrate 80 -trial 1
 ```
 
-### Folder structures
-
-`Trial_phase_list`
-test_\#Subj\_list contains subject index (1:54)
-
-test_phase_\#Subj\_list contains phase index (1:4) from vae_phase_select.py or from vae_subj_select_exclude.py,,
-
-`trained_vae`
-Trained vaes on each subject validation or test trials from get_list_vae.py
-
-`$output_adapt`
-Epochs performance of proposed adapted and proposed adapted models for dual_adapt_phase_while_test.py
-
-`$outpath`
-folder containing baseline SI model for each subject and training results of baseline SI model for dual_train_custom.py
-
-`subj_lists`
-folder containing npy files of 43 subjects closest to validation of target subj, from vae_subj_select.py, used to train baseline model using dual_train_custom.py
-
-`trial_lists`
-folder containing npy files of 43 subjects closest to test trial(s) of target subj, from vae_subj_select.py, used to train baseline model using dual_train_custom.py
+## Folder structures
+    .
+    ├── ...
+    ├── vae                             # Contains utility functions
+    ├── vae_models                      # Contains the unsupervised representation learning technique (vanilla VAE is used for this)
+    ├── $MODELPATH                      # Folder containing baseline models. Pre-trained baseline models are given in the folder `baseline_models`
+    ├── trained_vae                     # Folder containing the trained VAE models if `get_list_vae.py` is used to generate baseline models
+    ├── subj_lists                      # Folder containing npy files of 43 subjects closest to validation of target subject
+    ├── trial_lists                     # Folder containing npy files of 43 subjects closest to test trial(s) of target subject
+    ├── trial_phase_list                # Folder containing selected subject and phases when running main adaptation code
+    │   ├── test_\#Subj\_list             # Subject index ranging from 1 to 54
+    │   └── test_phase_\#Subj\_list       # Phase index ranging from 1 to 4
+    ├── $OUTPUT_ADAPT                   # Folder containing the adapted model using unsupervised re-learning and the performance of the model while training
+    │   ├── epochs_s\#Subj\_normal.csv    # Performance for the normal model
+    │   ├── epochs_s\#Subj\_updated.csv   # Performance for the adaptation model
+    │   └── subj_#Subj.pt               # Adapted model
+    └── ...

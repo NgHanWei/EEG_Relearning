@@ -7,7 +7,7 @@ Codes for performing one/few-shot unsupervised adaptation of a subject-independe
 | Methodology | Mean (SD) | Median | Range (Max-Min) |
 |-|-|-|-|
 | Subject-Independent | 84.44 (11.93) | 86.32 | 42.11 (100-57.89) |
-| Subject-Adaptive Deep CNN | 85.05 (11.20) | 86.32 | 40 (100-60) |
+| Subject-Adaptive Deep CNN | 85.05 (11.20) | 86.32 | 40.00 (100-60.00) |
 | Subject-Adaptive Siamese-VAE<br>(Including Extra Labels) | 85.82 (11.05) | 89.36 | 39.36 (100-60.64) |
 | Subject-Adaptive Siamese-VAE<br>(Excluding Extra Labels) | 86.63 (11.79) | 90.10 | 38.54 (100-61.46) |
 

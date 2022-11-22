@@ -340,11 +340,11 @@ for subj in range(1,55):
     ## Load best 60 phases for adaptation
     with open(load_string, 'rb') as f:
         update_subjs = np.load(f)
-        update_subjs = update_subjs[:60]
+        update_subjs = update_subjs[:100]
     print(update_subjs)
     with open(load_string_2, 'rb') as f:
         update_phases = np.load(f)
-        update_phases = update_phases[:60]
+        update_phases = update_phases[:100]
     print(update_phases)
     
     ## Perform adaptation

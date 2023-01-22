@@ -29,8 +29,6 @@ from braindecode.torch_ext.optimizers import AdamW
 from braindecode.torch_ext.util import set_random_seeds
 from torch import nn
 
-# python dual_adapt_phase_while_test.py D:/DeepConvNet/pre-processed/KU_mi_smt.h5 D:/adapt_eeg/baseline_models D:/adapt_eeg/results_adapt -scheme 5 -trfrate 100 -trial $trial
-
 logging.basicConfig(format='%(asctime)s %(levelname)s : %(message)s',
                     level=logging.INFO, stream=sys.stdout)
 

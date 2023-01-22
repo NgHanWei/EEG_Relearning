@@ -33,7 +33,9 @@ from braindecode.torch_ext.optimizers import AdamW
 from braindecode.torch_ext.util import set_random_seeds
 from torch import nn
 
-# python dual_adapt_phase_while_test.py D:/DeepConvNet/pre-processed/KU_mi_smt.h5 D:/adapt_eeg/baseline_models D:/adapt_eeg/results_adapt -scheme 5 -trfrate 10 -trial $trial
+import winsound
+
+# python dual_adapt_phase_while_test.py D:/DeepConvNet/pre-processed/KU_mi_smt.h5 D:/adapt_eeg/baseline_models D:/adapt_eeg/results_adapt -scheme 5 -trfrate 100 -trial $trial
 
 logging.basicConfig(format='%(asctime)s %(levelname)s : %(message)s',
                     level=logging.INFO, stream=sys.stdout)
@@ -44,18 +46,12 @@ parser.add_argument('datapath', type=str, help='Path to the h5 data file')
 parser.add_argument('modelpath', type=str,
                     help='Path to the base model folder')
 parser.add_argument('outpath', type=str, help='Path to the result folder')
-parser.add_argument('-scheme', type=int, help='Adaptation scheme', default=5)
+parser.add_argument('-scheme', type=int, help='Adaptation scheme', default=4)
 parser.add_argument(
     '-trfrate', type=int, help='The percentage of data for adaptation', default=100)
 parser.add_argument('-lr', type=float, help='Learning rate', default=0.0005)
 parser.add_argument('-gpu', type=int, help='The gpu device to use', default=0)
-parser.add_argument('-start', type=int,
-                    help='Start of the subject index', default=1)
-parser.add_argument(
-    '-end', type=int, help='End of the subject index (not inclusive)', default=55)
-parser.add_argument('-subj', type=int,
-                    help='Target Subject for Subject Selection')
-parser.add_argument('-trial', type=int, default = 4,
+parser.add_argument('-trial', type=int, default = 1,
                     help='How many trials to use for few-shot')
 parser.add_argument('-exclude', default=False, action='store_true')
 
@@ -71,15 +67,16 @@ dfile = h5py.File(datapath, 'r')
 torch.cuda.set_device(args.gpu)
 torch.manual_seed(0)
 torch.cuda.manual_seed_all(0)
+torch.set_num_threads(2)
 np.random.seed(0)
 torch.backends.cudnn.deterministic = True
 set_random_seeds(seed=20200205, cuda=True)
 BATCH_SIZE = 16
 TRAIN_EPOCH = 10
-start = args.start
-end = args.end
-assert(start < end)
-subjs_range = args.subj if args.subj else range(start, end)
+# start = args.start
+# end = args.end
+# assert(start < end)
+# subjs_range = args.subj if args.subj else range(start, end)
 exclude = args.exclude
 
 # Randomly shuffled subject.
@@ -337,7 +334,7 @@ for subj in range(1,55):
     load_string = './trial_phase_lists/test_' + str(subj) + '_list.npy'
     load_string_2 = './trial_phase_lists/test_phase_' + str(subj) + '_list.npy'
 
-    ## Load best 60 phases for adaptation
+    ## Load best X phases for adaptation
     with open(load_string, 'rb') as f:
         update_subjs = np.load(f)
         update_subjs = update_subjs[:100]
@@ -357,4 +354,10 @@ df = pd.DataFrame(data=dict1)
 df.index += 1
 print (df)
 
-df.to_excel('Results.xlsx',index_label='Subject')
+df.to_excel(outpath + '/Results.xlsx',index_label='Subject')
+
+duration = 1000  # milliseconds
+freq = 440  # Hz
+winsound.Beep(freq, duration)
+winsound.Beep(freq, duration)
+winsound.Beep(freq, duration)

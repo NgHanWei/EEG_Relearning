@@ -12,15 +12,11 @@ References
    Human Brain Mapping , Aug. 2017. Online: http://dx.doi.org/10.1002/hbm.23730
 '''
 import argparse
-import json
 import logging
 import sys
 from os.path import join as pjoin
-import os
-from types import new_class
-
 import pandas as pd
-import vae_subj_select
+
 import vae_phase_select
 import vae_phase_select_exclude
 
@@ -32,8 +28,6 @@ from braindecode.models.deep4 import Deep4Net
 from braindecode.torch_ext.optimizers import AdamW
 from braindecode.torch_ext.util import set_random_seeds
 from torch import nn
-
-import winsound
 
 # python dual_adapt_phase_while_test.py D:/DeepConvNet/pre-processed/KU_mi_smt.h5 D:/adapt_eeg/baseline_models D:/adapt_eeg/results_adapt -scheme 5 -trfrate 100 -trial $trial
 
@@ -63,6 +57,8 @@ scheme = args.scheme
 rate = args.trfrate
 lr = args.lr
 trials = args.trial
+exclude = args.exclude
+
 dfile = h5py.File(datapath, 'r')
 torch.cuda.set_device(args.gpu)
 torch.manual_seed(0)
@@ -71,19 +67,14 @@ torch.set_num_threads(2)
 np.random.seed(0)
 torch.backends.cudnn.deterministic = True
 set_random_seeds(seed=20200205, cuda=True)
+
 BATCH_SIZE = 16
 TRAIN_EPOCH = 10
-# start = args.start
-# end = args.end
-# assert(start < end)
-# subjs_range = args.subj if args.subj else range(start, end)
-exclude = args.exclude
 
 # Randomly shuffled subject.
 subjs = [35, 47, 46, 37, 13, 27, 12, 32, 53, 54, 4, 40, 19, 41, 18, 42, 34, 7,
          49, 9, 5, 48, 29, 15, 21, 17, 31, 45, 1, 38, 51, 8, 11, 16, 28, 44, 24,
          52, 3, 26, 39, 50, 6, 23, 2, 14, 25, 20, 10, 33, 22, 43, 36, 30]
-
 
 # Get data from single subject.
 def get_data(subj):
@@ -239,8 +230,6 @@ def update_model(update_subjs,subj,trial_num,update_phases):
               validation_data=(X_val, Y_val), remember_best_column='valid_loss')
     suffix = '_s' + str(subj) + '_normal'
     model.epochs_df.to_csv(pjoin(outpath, 'epochs' + suffix + '.csv'))
-    # base_adapt_loss = model.evaluate(X_test, Y_test)
-    # base_adapt_loss = 100 * (1- base_adapt_loss["misclass"])
 
     base_adapt_loss = model.evaluate(X_test[1+trial_num:], Y_test[1+trial_num:])
     base_adapt_loss = 100 * ((100-trial_num-1) * (1- base_adapt_loss["misclass"]))/(100-trial_num-1)
@@ -355,9 +344,3 @@ df.index += 1
 print (df)
 
 df.to_excel(outpath + '/Results.xlsx',index_label='Subject')
-
-duration = 1000  # milliseconds
-freq = 440  # Hz
-winsound.Beep(freq, duration)
-winsound.Beep(freq, duration)
-winsound.Beep(freq, duration)

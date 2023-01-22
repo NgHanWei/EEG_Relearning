@@ -1,4 +1,4 @@
-# Adaptive Few-Shot Unsupervised Machine Re-Learning for EEG Motor Imagery Classification via Deep Representation Learning
+# Unuspervised Few-Shot Adaptative Machine Re-Learning for EEG Motor Imagery Classification via Deep Representation Learning
 
 Codes for performing one/few-shot unsupervised adaptation of a subject-independent deep convolutional neural network (CNN) based electroencephalography (EEG)-BCI system for decoding hand motor imagery (MI). In the unsupervised adaptation, a few unlabelled MI trials are seen. Subsequently known data with the closest latent representations are selected and grouped together to finetune the pre-trained baseline model to improve performance towards a target subject.
 
@@ -8,8 +8,8 @@ Codes for performing one/few-shot unsupervised adaptation of a subject-independe
 |-|-|-|-|
 | Subject-Independent | 84.44 (11.93) | 86.32 | 42.11 (100-57.89) |
 | Subject-Adaptive Deep CNN | 85.05 (11.20) | 86.32 | 40.00 (100-60.00) |
-| Subject-Adaptive Siamese-VAE<br>(Including Extra Labels) | 85.82 (11.05) | 89.36 | 39.36 (100-60.64) |
-| Subject-Adaptive Siamese-VAE<br>(Excluding Extra Labels) | 86.63 (11.79) | 90.10 | 38.54 (100-61.46) |
+| Unuspervised Few-Shot Adaptation<br>(Including Extra Labels) | 85.82 (11.05) | 89.36 | 39.36 (100-60.64) |
+| Unuspervised Few-Shot Adaptation<br>(Excluding Extra Labels) | 86.63 (11.79) | 90.10 | 38.54 (100-61.46) |
 
 ## Resources
 Raw Dataset: [Link](http://gigadb.org/dataset/100542)

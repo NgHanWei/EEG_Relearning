@@ -123,7 +123,7 @@ Optional Arguments:
     -exclude                            Set data selection based on phases to either include or exclude additional labelled data, default included
 ```
 
-An example command line to run the proposed method for 54 subjects excluding the additional target subject data at scheme 5 and 4 unlabelled target trials, while comparing against previous method which uses 100% of additional target subject adaptation data:
+An example command line to run the proposed method for 54 subjects excluding the additional target subject data at scheme 5 and 1 unlabelled target trial, while comparing against previous method which uses 100% of additional target subject adaptation data:
 ```
 python dual_adapt_phase_while_test.py $DATAPATH $MODELPATH $OUTPATH_ADAPT -exclude
 ```

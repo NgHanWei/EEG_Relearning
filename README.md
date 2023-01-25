@@ -9,7 +9,7 @@ Codes for performing one/few-shot unsupervised adaptation of a subject-independe
 | Subject-Independent | 84.44 (11.93) | 86.32 | 42.11 (100-57.89) |
 | Subject-Adaptive Deep CNN | 85.05 (11.20) | 86.32 | 40.00 (100-60.00) |
 | Unuspervised Few-Shot Adaptation<br>(Including Extra Labels) | 85.82 (11.05) | 89.36 | 39.36 (100-60.64) |
-| Unuspervised Few-Shot Adaptation<br>(Excluding Extra Labels) | 86.63 (11.79) | 90.10 | 38.54 (100-61.46) |
+| Unuspervised Few-Shot Adaptation<br>(Excluding Extra Labels) | 88.23 (10.36) | 90.91 | 40.40 (100-59.60) |
 
 ## Resources
 Raw Dataset: [Link](http://gigadb.org/dataset/100542)

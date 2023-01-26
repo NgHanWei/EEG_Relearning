@@ -61,7 +61,6 @@ dfile = h5py.File(datapath, 'r')
 torch.cuda.set_device(args.gpu)
 torch.manual_seed(0)
 torch.cuda.manual_seed_all(0)
-torch.set_num_threads(2)
 np.random.seed(0)
 torch.backends.cudnn.deterministic = True
 set_random_seeds(seed=20200205, cuda=True)

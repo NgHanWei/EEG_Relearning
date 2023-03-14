@@ -1,7 +1,5 @@
-#!/usr/bin/env python
-# coding: utf-8
 '''Subject-specific classification with KU Data,
-using Deep ConvNet model from [1].
+using Deep ConvNet model.
 
 References
 ----------
@@ -25,8 +23,6 @@ import torch.nn.functional as F
 from braindecode.models.deep4 import Deep4Net
 from braindecode.torch_ext.optimizers import AdamW
 from braindecode.torch_ext.util import set_random_seeds
-
-# python train_custom.py D:/DeepConvNet/pre-processed/KU_mi_smt.h5 D:/eeg-adapt/results -subj $subj
 
 logging.basicConfig(format='%(asctime)s %(levelname)s : %(message)s',
                     level=logging.INFO, stream=sys.stdout)
@@ -99,7 +95,6 @@ for subj in subjs:
         list = np.load(f)
 
     # Select unchosen subjects to be validation
-    # list = [19, 44, 15, 2, 21, 31, 41, 49, 52, 53, 33, 23, 18, 13, 43, 11, 20, 7, 16, 29, 42, 46, 25, 6, 8, 10, 22, 47, 45, 14, 28, 27, 4, 12, 36, 39, 35, 26, 24, 48, 38, 3, 1]
     valid_list = []
     train_list = []
     for list_i in range(1,55):
@@ -113,17 +108,8 @@ for subj in subjs:
     X, Y = get_data(subj)
     X2, Y2 = get_multi_data(train_list)
     Valid_X, Valid_Y = get_multi_data(valid_list)
-    # Valid_X, Valid_Y = X[200:300], Y[200:300]
-    # X2,Y2 = X2[200:] , Y2[200:]
     X_train, Y_train = X2, Y2
-    # print(Y_train)
 
-    # X_train = np.concatenate((X_train, X2), axis=0)
-    # Y_train = np.concatenate((Y_train,Y2),axis=0)
-    # print(X_train.shape)
-    # print(Y_train.shape)
-
-    # X_val, Y_val =  X[200:300], Y[200:300]
     X_val, Y_val = Valid_X, Valid_Y
     X_test, Y_test = X[300:], Y[300:]
 
